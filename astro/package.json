@@ -1,0 +1,4 @@
+{
+    "main": "../dist/astro/index.cjs",
+    "types": "../dist/astro/index.d.cts"
+}

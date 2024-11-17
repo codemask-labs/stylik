@@ -1,0 +1,4 @@
+{
+    "main": "../dist/middleware/index.cjs",
+    "types": "../dist/middleware/index.d.cts"
+}

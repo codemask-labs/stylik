@@ -1,0 +1,67 @@
+{
+    "name": "stylik",
+    "version": "0.1.0",
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "exports": {
+        ".": {
+            "module": "./dist/index.mjs",
+            "import": {
+                "types": "./dist/index.d.mts",
+                "default": "./dist/index.mjs"
+            },
+            "require": {
+                "types": "./dist/index.d.cts",
+                "default": "./dist/index.cjs"
+            },
+            "default": "./dist/index.cjs"
+        },
+        "./middleware": {
+            "module": "./dist/middleware/index.mjs",
+            "import": {
+                "types": "./dist/middleware/index.d.mts",
+                "default": "./dist/middleware/index.mjs"
+            },
+            "require": {
+                "types": "./dist/middleware/index.d.cts",
+                "default": "./dist/middleware/index.cjs"
+            },
+            "default": "./dist/middleware/index.cjs"
+        },
+        "./astro": {
+            "module": "./dist/astro/index.mjs",
+            "import": {
+                "types": "./dist/astro/index.d.mts",
+                "default": "./dist/astro/index.mjs"
+            },
+            "require": {
+                "types": "./dist/astro/index.d.cts",
+                "default": "./dist/astro/index.cjs"
+            },
+            "default": "./dist/astro/index.cjs"
+        }
+    },
+    "scripts": {
+        "build": "unbuild"
+    },
+    "files": [
+        "dist",
+        "middleware"
+    ],
+    "dependencies": {
+        "typestyle": "2.4.0",
+        "escodegen": "2.1.0",
+        "meriyah": "6.0.3"
+    },
+    "peerDependencies": {
+        "astro": "4.16.13"
+    },
+    "devDependencies": {
+        "typescript": "5.6.3",
+        "dprint": "0.47.5",
+        "unbuild": "2.0.0",
+        "@types/escodegen": "0.0.10",
+        "@types/node": "22.9.0",
+        "astro": "4.16.13"
+    }
+}

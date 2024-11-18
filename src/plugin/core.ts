@@ -19,23 +19,11 @@ export const plugin = () => {
 
             const expression = component.declaration.declarations.at(0)?.init
 
-            if (!expression || expression.type !== 'ArrowFunctionExpression') {
+            if (!expression) {
                 return code
             }
 
-            if (expression.body.type !== 'BlockStatement' && expression.body.type !== 'CallExpression') {
-                return code
-            }
-
-            const argument = expression.body.type === 'BlockStatement'
-                ? expression.body.body.find(node => node.type === 'ReturnStatement')?.argument
-                : expression.body
-
-            if (!argument) {
-                return code
-            }
-
-            apply(argument)
+            apply(expression)
 
             return generate(ast)
         },

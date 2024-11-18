@@ -12,6 +12,8 @@ export const callExpression = (expression: ESTree.CallExpression) => {
     const callee = expression.callee as ESTree.MemberExpression
 
     if (callee.object.type !== 'Identifier' || callee.object.name !== 'styles') {
+        expression.arguments.forEach(apply)
+
         return
     }
 

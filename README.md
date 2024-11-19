@@ -15,10 +15,10 @@ Minimal CSS-in-JS library
 Install package using preferred package manager:
 
 ```bash
-npm install stylik
-yarn add stylik
-pnpm add stylik
-bun add stylik
+npm install @codemask-labs/stylik
+yarn add @codemask-labs/stylik
+pnpm add @codemask-labs/stylik
+bun add @codemask-labs/stylik
 ```
 
 ## Getting started
@@ -28,8 +28,6 @@ bun add stylik
 Create theme, breakpoints and override stylik types:
 
 ```ts
-import 'stylik'
-
 export const theme = {
     colors: {
         error: '#FF0000',
@@ -47,7 +45,7 @@ export const breakpoints = {
 export type Breakpoints = typeof breakpoints
 export type Theme = typeof theme
 
-declare module 'stylik' {
+declare module '@codemask-labs/stylik' {
     interface StylikTheme extends Theme {}
     interface StylikBreakpoints extends Breakpoints {}
 }
@@ -56,7 +54,7 @@ declare module 'stylik' {
 Configure stylik using `StyleSheet.configure` or built in Astro integration.
 
 ```ts
-import { StyleSheet } from 'stylik'
+import { StyleSheet } from '@codemask-labs/stylik'
 
 StyleSheet.configure({
     theme,
@@ -66,7 +64,7 @@ StyleSheet.configure({
 
 ```ts
 import { defineConfig } from 'astro/config'
-import { stylik } from 'stylik/astro'
+import { stylik } from '@codemask-labs/stylik/astro'
 import { breakpoints, theme } from './src/lib/styles'
 
 export default defineConfig({
@@ -84,7 +82,7 @@ And configuration is done!
 ### Styling
 
 ```tsx
-import { StyleSheet } from 'stylik'
+import { StyleSheet } from '@codemask-labs/stylik'
 
 const App = () => (
     <div className={styles.wrapper}>

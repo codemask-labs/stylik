@@ -1,6 +1,7 @@
 import { type ESTree } from 'meriyah'
 import { arrayExpression } from './arrayExpression'
 import { arrowFunctionExpression } from './arrowFunction'
+import { assignmentExpression } from './assignmentExpression'
 import { callExpression } from './callExpression'
 import { objectExpression } from './objectExpression'
 
@@ -14,5 +15,7 @@ export const apply = (expression: ESTree.Expression) => {
             return arrayExpression(expression)
         case 'ArrowFunctionExpression':
             return arrowFunctionExpression(expression)
+        case 'AssignmentExpression':
+            return assignmentExpression(expression)
     }
 }

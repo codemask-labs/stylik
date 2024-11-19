@@ -1,5 +1,5 @@
 {
-    "name": "stylik",
+    "name": "@codemask-labs/stylik",
     "version": "0.1.0",
     "type": "module",
     "description": "Minimal CSS-in-JS library",

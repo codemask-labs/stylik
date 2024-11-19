@@ -1,10 +1,11 @@
 import { generate } from 'escodegen'
 import { parseModule } from 'meriyah'
+import { name } from '../../package.json'
 import { apply } from './apply'
 
 export const plugin = () => {
     return {
-        name: 'stylik-vite-plugin',
+        name,
         transform: (code: string, id: string) => {
             if (!id.includes('src') || !id.endsWith('.tsx')) {
                 return code

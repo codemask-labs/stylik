@@ -1,11 +1,12 @@
 import type { AstroIntegration } from 'astro'
 import { writeFile } from 'fs/promises'
+import { name } from '../../package.json'
 import { plugin } from '../plugin'
 import { stylik as stylikState } from '../state'
 import type { Config } from '../types'
 
 export const stylik = (config: Config): AstroIntegration => ({
-    name: '@astro/stylik',
+    name,
     hooks: {
         'astro:config:setup': ({ updateConfig, command, injectScript, addMiddleware }) => {
             const stylikConfig = {
@@ -13,7 +14,7 @@ export const stylik = (config: Config): AstroIntegration => ({
                 isDev: command === 'dev',
             }
             stylikState.configure(stylikConfig)
-            injectScript('page', 'import { StyleSheet } from "stylik"')
+            injectScript('page', `import { StyleSheet } from "${name}"`)
             injectScript('page', `StyleSheet.configure(${JSON.stringify(stylikConfig)})`)
             updateConfig({
                 vite: {
@@ -22,7 +23,7 @@ export const stylik = (config: Config): AstroIntegration => ({
             })
             addMiddleware({
                 order: 'pre',
-                entrypoint: 'stylik/middleware',
+                entrypoint: `${name}/middleware`,
             })
         },
         'astro:build:done': async ({ dir }) => {

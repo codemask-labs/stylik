@@ -2,6 +2,19 @@
     "name": "stylik",
     "version": "0.1.0",
     "type": "module",
+    "description": "Minimal CSS-in-JS library",
+    "keywords": [
+        "css-in-js",
+        "css",
+        "stylik",
+        "astro"
+    ],
+    "author": "codemask-labs",
+    "homepage": "https://github.com/codemask-labs/stylik",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/codemask-labs/stylik.git"
+    },
     "main": "./dist/index.cjs",
     "exports": {
         ".": {
@@ -56,12 +69,16 @@
     "peerDependencies": {
         "astro": "4.16.13"
     },
+    "peerDependenciesMeta": {
+        "astro": {
+            "optional": true
+        }
+    },
     "devDependencies": {
         "typescript": "5.6.3",
         "dprint": "0.47.5",
         "unbuild": "2.0.0",
         "@types/escodegen": "0.0.10",
-        "@types/node": "22.9.0",
-        "astro": "4.16.13"
+        "@types/node": "22.9.0"
     }
 }

@@ -15,6 +15,12 @@
         "type": "git",
         "url": "git+https://github.com/codemask-labs/stylik.git"
     },
+    "publishConfig": {
+        "access": "public",
+        "ignore": [
+            "dist/*.map*"
+        ]
+    },
     "main": "./dist/index.cjs",
     "exports": {
         ".": {

@@ -1,12 +1,12 @@
 import { media } from 'typestyle'
 import type { NestedCSSProperties } from 'typestyle/lib/types'
 import { stylik } from './state'
-import { DYNAMIC_STYLIK_PROPERTY, type StylikBreakpoints, type StylikTheme } from './types'
+import { type Breakpoint, DYNAMIC_STYLIK_PROPERTY, type StylikTheme } from './types'
+import { parseMq } from './utils'
 
 const pseudos = ['_before', '_after', '_hover'] as const
 
 type Pseudos = typeof pseudos[number]
-type Breakpoint = keyof StylikBreakpoints
 
 type WithMedia<T extends Record<string, any>> = {
     [K in keyof T]:
@@ -15,7 +15,7 @@ type WithMedia<T extends Record<string, any>> = {
             [B in Breakpoint]?: T[K]
         }
             & {
-                [N: number]: T[K]
+                [N: number | symbol]: T[K]
             }
 }
 
@@ -29,23 +29,51 @@ const isPseudo = (key: string) => pseudos.includes(key as Pseudos)
 
 const isWithMedia = (value: unknown): value is Record<Breakpoint, NestedCSSProperties> => typeof value === 'object'
 
-const getMediaStyles = (key: string, value: Record<Breakpoint, NestedCSSProperties>) =>
-    Object.entries(value).map(([breakpoint, breakpointValue], _, allBreakpoints) => {
-        const currentBreakpoint = Number(
-            breakpoint in stylik.breakpoints
-                ? stylik.breakpoints[breakpoint as Breakpoint]
-                : breakpoint,
-        )
-        const nextBreakpoint = allBreakpoints
-            .map(([b]) => Number(b in stylik.breakpoints ? stylik.breakpoints[b as Breakpoint] : b))
-            .sort()
-            .find(b => b > currentBreakpoint)
+const getMediaStyles = (key: string, value: Record<Breakpoint, NestedCSSProperties>) => {
+    const parsedStyles = Object.entries(value)
+        .map(([breakpoint, breakpointValue]): [number | ReturnType<typeof parseMq>, unknown] => {
+            if (breakpoint in stylik.breakpoints) {
+                return [stylik.breakpoints[breakpoint as Breakpoint] as number, breakpointValue]
+            }
+
+            const mq = parseMq(breakpoint)
+
+            return [mq, breakpointValue]
+        })
+        .sort(([a], [b]) => {
+            if (typeof a === 'number' && typeof b === 'number') {
+                return a - b
+            }
+
+            if (typeof a === 'number') {
+                return -1
+            }
+
+            if (typeof b === 'number') {
+                return 1
+            }
+
+            return 0
+        })
+
+    const otherBreakpoints = parsedStyles
+        .map(([b]) => b)
+        .filter(b => typeof b === 'number')
+        .sort()
+
+    return parsedStyles.map(([breakpoint, breakpointValue]) => {
+        if (typeof breakpoint !== 'number') {
+            return media(breakpoint, { [key]: breakpointValue })
+        }
+
+        const nextBreakpoint = otherBreakpoints.find(b => b > breakpoint)
 
         return media({
-            minWidth: `${currentBreakpoint}px`,
+            minWidth: `${breakpoint}px`,
             maxWidth: nextBreakpoint ? `${nextBreakpoint - 1}px` : undefined,
         }, { [key]: breakpointValue })
     })
+}
 
 const generateStyles = (style: StylikCSSProperties): Array<NestedCSSProperties> => {
     const styles = Object.entries(style).flatMap(([key, value]) => {

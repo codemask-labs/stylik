@@ -8,3 +8,4 @@ export const StyleSheet = {
 }
 
 export type { StylikBreakpoints, StylikCSSProperties, StylikTheme }
+export { mq } from './utils'

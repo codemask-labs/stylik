@@ -12,3 +12,5 @@ export type Config = {
     theme: StylikTheme
     breakpoints: StylikBreakpoints
 }
+
+export type Breakpoint = keyof StylikBreakpoints

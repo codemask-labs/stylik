@@ -8,7 +8,19 @@ export const getStyleTag = (id: StyleTagID) => {
         return { textContent: '' }
     }
 
-    return document.querySelector<HTMLStyleElement>(`#${id}`) ?? { textContent: '' }
+    const styleTag = document.querySelector<HTMLStyleElement>(`#${id}`)
+
+    const styleProxy = new Proxy(styleTag ?? { textContent: '' }, {
+        set: (target, property, value) => {
+            if (property !== 'textContent') {
+                return Reflect.set(target, property, value)
+            }
+
+            return Reflect.set(target, property, value === '' ? target.textContent : value)
+        },
+    })
+
+    return styleProxy
 }
 
 const mqHeight = (minHeight: number, maxHeight?: number) => {

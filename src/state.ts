@@ -1,11 +1,10 @@
-import { createTypeStyle } from 'typestyle'
-import type { NestedCSSProperties } from 'typestyle/lib/types'
-import { Config, StyleTagID, StylikBreakpoints, StylikTheme } from './types'
-import { getStyleTag, isServer } from './utils'
+import { StylikParser } from './parser'
+import { Config, StyleTagID, StylikBreakpoints, StylikCSSProperties, StylikTheme } from './types'
+import { isServer } from './utils'
 
 class Stylik {
-    #staticStyles = createTypeStyle()
-    #dynamicStyles = createTypeStyle()
+    #staticStyles = new StylikParser(StyleTagID.Static)
+    #dynamicStyles = new StylikParser(StyleTagID.Dynamic)
     #theme: StylikTheme | undefined
     #breakpoints: StylikBreakpoints | undefined
     isDev = false
@@ -26,22 +25,10 @@ class Stylik {
         return this.#breakpoints
     }
 
-    constructor() {
-        this.#updateStyleTags()
-    }
-
     configure(config: Config & { isDev?: boolean }) {
         this.#theme = config.theme
         this.#breakpoints = config.breakpoints
         this.isDev = Boolean(config.isDev)
-    }
-
-    #updateStyleTags() {
-        const staticTag = getStyleTag(StyleTagID.Static)
-        const dynamicTag = getStyleTag(StyleTagID.Dynamic)
-
-        this.#staticStyles.setStylesTarget(staticTag)
-        this.#dynamicStyles.setStylesTarget(dynamicTag)
     }
 
     getStaticStyles() {
@@ -52,12 +39,12 @@ class Stylik {
         return this.#dynamicStyles.getStyles()
     }
 
-    addStaticStyles(key: string, styles: Array<NestedCSSProperties>) {
-        return this.#staticStyles.style(...styles, { $debugName: this.isDev ? key : undefined })
+    addStaticStyles(key: string, styles: StylikCSSProperties) {
+        return this.#staticStyles.add(styles)
     }
 
-    addDynamicStyles(key: string, styles: Array<NestedCSSProperties>) {
-        return this.#dynamicStyles.style(...styles, { $debugName: this.isDev ? key : undefined })
+    addDynamicStyles(key: string, styles: StylikCSSProperties) {
+        return this.#dynamicStyles.add(styles)
     }
 }
 

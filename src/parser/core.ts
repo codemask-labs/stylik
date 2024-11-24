@@ -1,61 +1,69 @@
 import { StylikCSSProperties } from '../types'
 import { getMediaQuery } from './breakpoint'
+import { StylikParser } from './state'
 import { parseUnit } from './unit'
-import { camelToKebab } from './utils'
+import { camelToKebab, getStylesFromState } from './utils'
 
-export const parseStyles = (hash: string, config: StylikCSSProperties) => {
-    let styles = `${hash}{`
-
-    const generateStyles = ([key, value]: [string, any]) => {
-        if (key.charCodeAt(0) === 95) {
-            styles += `}`
-        }
-    }
-
-    const a = Object.entries(config).reduce((acc, [styleKey, styleValue]) => {
+export const parseStyles = (hash: string, config: StylikCSSProperties, state: StylikParser['styles']) => {
+    Object.entries(config).forEach(([styleKey, styleValue]) => {
         styleKey = camelToKebab(styleKey)
 
         if (styleKey.charCodeAt(0) === 95) {
-            const pseudo = styleKey.replace('_', `${hash}:`)
+            const pseudoClassName = styleKey.replace('_', `${hash}:`)
+
             Object.entries(styleValue).forEach(([pseudoStyleKey, pseudoStyleValue]) => {
                 if (typeof pseudoStyleValue === 'object') {
+                    const allBreakpoints = Object.keys(pseudoStyleValue)
                     Object.entries(pseudoStyleValue).forEach(([breakpoint, breakpointStyleValue]) => {
-                        const mediaQuery = getMediaQuery(breakpoint)
+                        const mediaQuery = getMediaQuery(breakpoint, allBreakpoints)
+                        const propertyKey = camelToKebab(pseudoStyleKey)
 
-                        acc[`${mediaQuery}\0${pseudo}`] ??= {}
-                        acc[`${mediaQuery}\0${pseudo}`][pseudoStyleKey] ??= breakpointStyleValue
+                        state.set({
+                            mediaQuery,
+                            className: pseudoClassName,
+                            propertyKey,
+                            value: parseUnit(propertyKey, breakpointStyleValue),
+                        })
                     })
 
                     return
                 }
 
-                acc[pseudo] ??= {}
-                acc[pseudo][pseudoStyleKey] = parseUnit(styleKey, pseudoStyleValue)
+                const propertyKey = camelToKebab(pseudoStyleKey)
+
+                state.set({
+                    className: pseudoClassName,
+                    propertyKey,
+                    value: parseUnit(propertyKey, pseudoStyleValue),
+                })
             })
 
-            return acc
+            return
         }
 
         if (typeof styleValue === 'object') {
+            const allBreakpoints = Object.keys(styleValue)
             Object.entries(styleValue).forEach(([breakpoint, breakpointStyleValue]) => {
-                const mediaQuery = getMediaQuery(breakpoint)
+                const mediaQuery = getMediaQuery(breakpoint, allBreakpoints)
+                const propertyKey = camelToKebab(styleKey)
 
-                acc[mediaQuery] ??= {}
-                acc[mediaQuery][styleKey] = parseUnit(styleKey, breakpointStyleValue)
+                state.set({
+                    mediaQuery,
+                    className: hash,
+                    propertyKey,
+                    value: parseUnit(propertyKey, breakpointStyleValue),
+                })
             })
 
-            return acc
+            return
         }
 
-        acc[hash] ??= {}
-        acc[hash][styleKey] = parseUnit(styleKey, styleValue)
+        const propertyKey = camelToKebab(styleKey)
 
-        return acc
-    }, {} as Record<string, any>)
-
-    console.log(a)
-
-    styles += '}'
-
-    return styles
+        state.set({
+            className: hash,
+            propertyKey,
+            value: parseUnit(propertyKey, styleValue),
+        })
+    })
 }

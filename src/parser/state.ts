@@ -1,11 +1,11 @@
-import { StyleTagID, StylikCSSProperties } from '../types'
+import { CSSProperties, StyleTagID, StylikCSSProperties } from '../types'
 import { isServer } from '../utils'
 import { parseStyles } from './core'
-import { generateHash } from './utils'
+import { createParserState, generateHash } from './utils'
 
 export class StylikParser {
     private cache = new Set<string>()
-    private styles = ''
+    private styles = createParserState()
     private stylesTarget: HTMLStyleElement | null = null
 
     constructor(id: StyleTagID) {
@@ -24,14 +24,10 @@ export class StylikParser {
         }
 
         this.cache.add(hash)
-        this.styles += parseStyles(hash, config)
-
-        if (this.stylesTarget) {
-            this.stylesTarget.textContent = this.styles
-        }
+        parseStyles(hash, config, this.styles)
 
         return hash
     }
 
-    getStyles = () => this.styles
+    getStyles = () => ''
 }

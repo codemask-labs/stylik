@@ -2,9 +2,20 @@ import { stylik } from '../state'
 import { Breakpoint } from '../types'
 import { parseMq } from '../utils'
 
-export const getMediaQuery = (breakpoint: string) => {
+export const getMediaQuery = (breakpoint: string, allBreakpoints: Array<string>) => {
     if (breakpoint in stylik.breakpoints) {
-        return `@media (min-width: ${stylik.breakpoints[breakpoint as Breakpoint]}px)`
+        const breakpointValue = stylik.breakpoints[breakpoint as Breakpoint]
+        const nextBreakpoint = allBreakpoints
+            .filter((b): b is Breakpoint => b in stylik.breakpoints)
+            .map(b => stylik.breakpoints[b])
+            .sort((a, b) => a - b)
+            .find(b => b > breakpointValue)
+        const queries = [
+            `(min-width: ${breakpointValue}px)`,
+            nextBreakpoint ? `(max-width: ${nextBreakpoint - 1}px)` : undefined,
+        ].filter(Boolean).join(' and ')
+
+        return `@media ${queries}`
     }
 
     const { minWidth, maxWidth, minHeight, maxHeight } = parseMq(breakpoint)

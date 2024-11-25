@@ -15,8 +15,8 @@ export type Config = {
     breakpoints: StylikBreakpoints
 }
 
-type ParsePseudos<T extends string> = T extends `:${infer U}` ? `_${U}`
-    : T extends `::${infer V}` ? `_${V}`
+type ParsePseudos<T extends string> = T extends `::${infer U}` ? `_${U}`
+    : T extends `:${infer V}` ? `_${V}`
     : never
 export type Pseudos = ParsePseudos<CSS.Pseudos>
 export type Breakpoint = keyof StylikBreakpoints

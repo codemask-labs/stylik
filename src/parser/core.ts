@@ -8,7 +8,7 @@ export const parseStyles = (hash: string, config: StylikCSSProperties, state: St
     Object.entries(config).forEach(([styleKey, styleValue]) => {
         styleKey = camelToKebab(styleKey)
 
-        if (styleKey.charCodeAt(0) === 95) {
+        if (styleKey[0] === '_') {
             const pseudoClassName = styleKey.replace('_', `${hash}:`)
 
             Object.entries(styleValue).forEach(([pseudoStyleKey, pseudoStyleValue]) => {

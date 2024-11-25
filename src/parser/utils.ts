@@ -9,6 +9,20 @@ const KEBAB_REGEX = /[A-Z]/g
 
 export const camelToKebab = (str: string) => str.replace(KEBAB_REGEX, '-$&').toLowerCase()
 
+const safeGetMap = (map: Map<string, Map<string, any>>, key: string) => {
+    const nextLevelMap = map.get(key)
+
+    if (!nextLevelMap) {
+        const newMap = new Map<string, any>()
+
+        map.set(key, newMap)
+
+        return newMap
+    }
+
+    return nextLevelMap
+}
+
 type SetStateProps = {
     mediaQuery?: string
     className: string
@@ -30,25 +44,9 @@ export const createParserState = () => {
             propertyKey,
             value,
         }: SetStateProps) => {
-            const secondLevelMap = (() => {
-                const firstLevelMap = isMq ? mqMap : mainMap
-                const secondLevelMap = firstLevelMap.get(mediaQuery) ?? (() => {
-                    const newMap = new Map<string, Map<string, any>>()
-
-                    firstLevelMap.set(mediaQuery, newMap)
-
-                    return newMap
-                })()
-
-                return secondLevelMap
-            })()
-            const thirdLevelMap = secondLevelMap.get(className) ?? (() => {
-                const newMap = new Map<string, any>()
-
-                secondLevelMap.set(className, newMap)
-
-                return newMap
-            })()
+            const firstLevelMap = isMq ? mqMap : mainMap
+            const secondLevelMap = safeGetMap(firstLevelMap, mediaQuery)
+            const thirdLevelMap = safeGetMap(secondLevelMap, className)
 
             thirdLevelMap.set(propertyKey, value)
         },

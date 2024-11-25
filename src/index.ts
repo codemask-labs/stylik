@@ -1,6 +1,6 @@
-import { create, type StylikCSSProperties } from './create'
+import { create } from './create'
 import { stylik } from './state'
-import type { Config, StylikBreakpoints, StylikTheme } from './types'
+import type { Config, StylikBreakpoints, StylikCSSProperties, StylikTheme } from './types'
 
 export const StyleSheet = {
     create,

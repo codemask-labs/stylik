@@ -8,8 +8,12 @@ export class StylikParser {
     private styles = createParserState()
     private stylesTarget: HTMLStyleElement | null = null
 
-    constructor(id: StyleTagID) {
-        if (isServer() || id === StyleTagID.Static) {
+    constructor(id: StyleTagID, isDev: boolean) {
+        if (isServer()) {
+            return
+        }
+
+        if (!isDev && id === StyleTagID.Static) {
             return
         }
 

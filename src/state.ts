@@ -3,10 +3,10 @@ import { Config, StyleTagID, StylikBreakpoints, StylikCSSProperties, StylikTheme
 import { isServer } from './utils'
 
 class Stylik {
-    #staticStyles = new StylikParser(StyleTagID.Static)
-    #dynamicStyles = new StylikParser(StyleTagID.Dynamic)
-    #theme: StylikTheme | undefined
-    #breakpoints: StylikBreakpoints | undefined
+    #staticStyles?: StylikParser
+    #dynamicStyles?: StylikParser
+    #theme?: StylikTheme
+    #breakpoints?: StylikBreakpoints
     isDev = false
 
     get theme() {
@@ -29,22 +29,24 @@ class Stylik {
         this.#theme = config.theme
         this.#breakpoints = config.breakpoints
         this.isDev = Boolean(config.isDev)
+        this.#staticStyles = new StylikParser(StyleTagID.Static, this.isDev)
+        this.#dynamicStyles = new StylikParser(StyleTagID.Dynamic, this.isDev)
     }
 
     getStaticStyles() {
-        return this.#staticStyles.getStyles()
+        return this.#staticStyles?.getStyles() ?? ''
     }
 
     getDynamicStyles() {
-        return this.#dynamicStyles.getStyles()
+        return this.#dynamicStyles?.getStyles() ?? ''
     }
 
     addStaticStyles(key: string, styles: StylikCSSProperties) {
-        return this.#staticStyles.add(this.isDev ? key : undefined, styles)
+        return this.#staticStyles?.add(this.isDev ? key : undefined, styles)
     }
 
     addDynamicStyles(key: string, styles: StylikCSSProperties) {
-        return this.#dynamicStyles.add(this.isDev ? key : undefined, styles)
+        return this.#dynamicStyles?.add(this.isDev ? key : undefined, styles)
     }
 }
 

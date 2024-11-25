@@ -40,11 +40,11 @@ class Stylik {
     }
 
     addStaticStyles(key: string, styles: StylikCSSProperties) {
-        return this.#staticStyles.add(styles)
+        return this.#staticStyles.add(this.isDev ? key : undefined, styles)
     }
 
     addDynamicStyles(key: string, styles: StylikCSSProperties) {
-        return this.#dynamicStyles.add(styles)
+        return this.#dynamicStyles.add(this.isDev ? key : undefined, styles)
     }
 }
 

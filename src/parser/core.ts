@@ -2,7 +2,7 @@ import { StylikCSSProperties } from '../types'
 import { getMediaQuery } from './breakpoint'
 import { StylikParser } from './state'
 import { parseUnit } from './unit'
-import { camelToKebab, getStylesFromState } from './utils'
+import { camelToKebab } from './utils'
 
 export const parseStyles = (hash: string, config: StylikCSSProperties, state: StylikParser['styles']) => {
     Object.entries(config).forEach(([styleKey, styleValue]) => {

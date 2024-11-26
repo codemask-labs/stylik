@@ -8,7 +8,7 @@ export class StylikParser {
     private styles = createParserState()
     private stylesTarget: HTMLStyleElement | null = null
 
-    constructor(id: StyleTagID, isDev: boolean) {
+    constructor(id: StyleTagID, private isDev: boolean) {
         if (isServer()) {
             return
         }
@@ -20,8 +20,8 @@ export class StylikParser {
         this.stylesTarget = document.querySelector<HTMLStyleElement>(`#${id}`)
     }
 
-    add = (key: string | undefined, config: StylikCSSProperties) => {
-        const hash = `${key ? `${key}-` : ''}${generateHash(JSON.stringify(config))}`
+    add = (key: string, config: StylikCSSProperties) => {
+        const hash = `${this.isDev ? `${key}-` : ''}${generateHash(config)}`
 
         if (this.cache.has(hash)) {
             return hash

@@ -1,8 +1,38 @@
-export const generateHash = (str: string) => {
-    let value = 5381
-    let len = str.length
-    while (len--) value = (value * 33) ^ str.charCodeAt(len)
-    return `s${(value >>> 0).toString(36)}`
+import { StylikCSSProperties } from '../types'
+
+const serialize = (obj: string | number | object): string => {
+    if (typeof obj !== 'object') {
+        return String(obj)
+    }
+
+    const sortedKeys = Object.keys(obj).sort()
+    const sortedKeyValuePairs = sortedKeys.map(key => `${key}:${serialize(obj[key as keyof typeof obj])}`)
+
+    return `{${sortedKeyValuePairs.join(',')}}`
+}
+
+// Based on https://github.com/bryc/code/blob/master/jshash/experimental/cyrb53.js
+const cyrb53 = (data: string, seed = 0) => {
+    let h1 = 0xdeadbeef ^ seed
+    let h2 = 0x41c6ce57 ^ seed
+
+    for (let i = 0, ch; i < data.length; i++) {
+        ch = data.charCodeAt(i)
+        h1 = Math.imul(h1 ^ ch, 2654435761)
+        h2 = Math.imul(h2 ^ ch, 1597334677)
+    }
+
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909)
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909)
+
+    return 4294967296 * (2097151 & h2) + (h1 >>> 0)
+}
+
+export const generateHash = (config: StylikCSSProperties) => {
+    const serializedString = serialize(config)
+    const hash = cyrb53(serializedString).toString(36)
+
+    return `s${hash}`
 }
 
 const KEBAB_REGEX = /[A-Z]/g
@@ -50,36 +80,45 @@ export const createParserState = () => {
 
             thirdLevelMap.set(propertyKey, value)
         },
-        entries: () => [...mainMap.entries(), ...mqMap.entries()],
+        mainMap,
+        mqMap,
     }
 }
 
 export const getStylesFromState = (state: ReturnType<typeof createParserState>) => {
     let styles = ''
 
-    state.entries().forEach(([mediaQuery, secondLevelMap]) => {
+    const generate = (mediaQuery: string, secondLevelMap: Map<string, Map<string, string>>) => {
         if (mediaQuery) {
             styles += `${mediaQuery}{`
         }
 
-        secondLevelMap.forEach((thirdLevelMap, className) => {
+        for (const [className, thirdLevelMap] of secondLevelMap) {
             styles += `.${className}{`
 
-            thirdLevelMap.forEach((value, propertyKey) => {
+            for (const [propertyKey, value] of thirdLevelMap) {
                 if (value === undefined) {
-                    return
+                    continue
                 }
 
-                styles += `${propertyKey}:${value};`
-            })
+                styles += `${camelToKebab(propertyKey)}:${value};`
+            }
 
             styles += '}'
-        })
+        }
 
         if (mediaQuery) {
             styles += '}'
         }
-    })
+    }
+
+    for (const [mediaQuery, secondLevelMap] of state.mainMap) {
+        generate(mediaQuery, secondLevelMap)
+    }
+
+    for (const [mediaQuery, secondLevelMap] of state.mqMap) {
+        generate(mediaQuery, secondLevelMap)
+    }
 
     return styles
 }

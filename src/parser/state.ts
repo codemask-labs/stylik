@@ -7,13 +7,16 @@ export class StylikParser {
     private cache = new Set<string>()
     private styles = createParserState()
     private stylesTarget: HTMLStyleElement | null = null
+    private staticProd = false
 
     constructor(id: StyleTagID, private isDev: boolean) {
         if (isServer()) {
             return
         }
 
-        if (!isDev && id === StyleTagID.Static) {
+        this.staticProd = !isDev && id === StyleTagID.Static
+
+        if (this.staticProd) {
             return
         }
 
@@ -23,18 +26,26 @@ export class StylikParser {
     add = (key: string, config: StylikCSSProperties) => {
         const hash = `${this.isDev ? `${key}-` : ''}${generateHash(config)}`
 
-        if (this.cache.has(hash)) {
+        try {
+            if (this.cache.has(hash)) {
+                return
+            }
+
+            this.cache.add(hash)
+
+            if (this.staticProd) {
+                return
+            }
+
+            parseStyles(hash, config, this.styles)
+
+            if (this.stylesTarget) {
+                this.stylesTarget.textContent = getStylesFromState(this.styles)
+            }
+            // No matter what return the hash
+        } finally {
             return hash
         }
-
-        this.cache.add(hash)
-        parseStyles(hash, config, this.styles)
-
-        if (this.stylesTarget) {
-            this.stylesTarget.textContent = getStylesFromState(this.styles)
-        }
-
-        return hash
     }
 
     getStyles = () => getStylesFromState(this.styles)

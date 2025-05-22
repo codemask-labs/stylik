@@ -1,6 +1,6 @@
 {
     "name": "@codemask-labs/stylik",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "type": "module",
     "description": "Minimal CSS-in-JS library",
     "keywords": [
@@ -58,6 +58,18 @@
                 "default": "./dist/astro/index.cjs"
             },
             "default": "./dist/astro/index.cjs"
+        },
+        "./plugin": {
+            "module": "./dist/plugin/index.mjs",
+            "import": {
+                "types": "./dist/plugin/index.d.mts",
+                "default": "./dist/plugin/index.mjs"
+            },
+            "require": {
+                "types": "./dist/plugin/index.d.cts",
+                "default": "./dist/plugin/index.cjs"
+            },
+            "default": "./dist/plugin/index.cjs"
         }
     },
     "scripts": {

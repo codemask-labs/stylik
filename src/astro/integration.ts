@@ -1,7 +1,7 @@
 import type { AstroIntegration } from 'astro'
 import { writeFile } from 'fs/promises'
 import { name } from '../../package.json'
-import { plugin } from '../plugin'
+import { stylik as plugin } from '../plugin'
 import { stylik as stylikState } from '../state'
 import type { Config } from '../types'
 

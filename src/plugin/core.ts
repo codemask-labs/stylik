@@ -3,7 +3,7 @@ import { parseModule } from 'meriyah'
 import { name } from '../../package.json'
 import { apply } from './apply'
 
-export const plugin = () => {
+export const stylik = () => {
     return {
         name,
         transform: (code: string, id: string) => {
@@ -27,6 +27,6 @@ export const plugin = () => {
             apply(expression)
 
             return generate(ast)
-        },
+        }
     }
 }

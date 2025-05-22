@@ -1,5 +1,6 @@
 import { StylikCSSProperties } from '../types'
 import { getMediaQuery } from './breakpoint'
+import { pseudos } from './pseudos'
 import { StylikParser } from './state'
 import { parseUnit } from './unit'
 import { camelToKebab } from './utils'
@@ -9,7 +10,8 @@ export const parseStyles = (hash: string, config: StylikCSSProperties, state: St
         styleKey = camelToKebab(styleKey)
 
         if (styleKey[0] === '_') {
-            const pseudoClassName = styleKey.replace('_', `${hash}:`)
+            const pseudoColon = pseudos[styleKey as keyof typeof pseudos] ?? ':'
+            const pseudoClassName = styleKey.replace('_', `${hash}${pseudoColon}`)
 
             Object.entries(styleValue).forEach(([pseudoStyleKey, pseudoStyleValue]) => {
                 if (typeof pseudoStyleValue === 'object') {

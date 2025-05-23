@@ -19,13 +19,16 @@ export const callExpression = (expression: ESTree.CallExpression) => {
     const propertyName = callee.property.type === 'Identifier'
         ? callee.property.name
         : ''
+    const isComputed = callee.computed
 
+    callee.computed = false
     callee.property = {
         name: DYNAMIC_STYLIK_PROPERTY,
         type: 'Identifier',
     } satisfies ESTree.Identifier
     callee.object = {
         type: 'MemberExpression',
+        computed: isComputed,
         property: {
             name: propertyName,
             type: 'Identifier',

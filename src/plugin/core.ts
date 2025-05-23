@@ -27,6 +27,6 @@ export const stylik = () => {
             apply(expression)
 
             return generate(ast)
-        }
+        },
     }
 }

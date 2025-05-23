@@ -1,5 +1,5 @@
-import type { ESTree } from 'meriyah';
-import { apply } from './apply';
+import type { ESTree } from 'meriyah'
+import { apply } from './apply'
 
 export const arrayExpression = (expression: ESTree.ArrayExpression) => {
     expression.elements.forEach(el => {

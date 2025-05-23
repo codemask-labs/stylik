@@ -5,6 +5,7 @@ import { assignmentExpression } from './assignmentExpression'
 import { callExpression } from './callExpression'
 import { conditionalExpression } from './conditionalExpression'
 import { objectExpression } from './objectExpression'
+import { templateLiteral } from './templateLiteral'
 
 export const apply = (expression: ESTree.Expression) => {
     switch (expression.type) {
@@ -20,5 +21,10 @@ export const apply = (expression: ESTree.Expression) => {
             return assignmentExpression(expression)
         case 'ConditionalExpression':
             return conditionalExpression(expression)
+        case 'TemplateLiteral':
+            return templateLiteral(expression)
+        default:
+            console.log(expression.type)
+            return
     }
 }

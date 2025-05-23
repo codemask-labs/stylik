@@ -24,7 +24,6 @@ export const apply = (expression: ESTree.Expression) => {
         case 'TemplateLiteral':
             return templateLiteral(expression)
         default:
-            console.log(expression.type)
             return
     }
 }

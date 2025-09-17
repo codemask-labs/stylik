@@ -94,7 +94,7 @@ export const getStylesFromState = (state: ReturnType<typeof createParserState>) 
         }
 
         for (const [className, thirdLevelMap] of secondLevelMap) {
-            styles += `.${className}{`
+            styles += `${className}{`
 
             for (const [propertyKey, value] of thirdLevelMap) {
                 if (value === undefined) {

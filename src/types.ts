@@ -43,3 +43,4 @@ type ExtendedNestedCSSProperties = WithMedia<CSSProperties>
 export type StylikCSSProperties =
     & ExtendedNestedCSSProperties
     & { [K in Pseudos]?: ExtendedNestedCSSProperties }
+    & { _selectors?: Record<string, ExtendedNestedCSSProperties> }

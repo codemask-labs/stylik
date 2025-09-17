@@ -9,6 +9,39 @@ export const parseStyles = (hash: string, config: StylikCSSProperties, state: St
     Object.entries(config).forEach(([styleKey, styleValue]) => {
         styleKey = camelToKebab(styleKey)
 
+        if (styleKey === '_selectors') {
+            Object.entries(styleValue as Required<StylikCSSProperties>['_selectors']).forEach(([selector, selectorValue]) => {
+                const selectorClassName = selector.replace('&', hash)
+
+                Object.entries(selectorValue).forEach(([selectorStyleKey, selectorStyleValue]) => {
+                    if (typeof selectorStyleValue === 'object') {
+                        const allBreakpoints = Object.keys(selectorStyleValue)
+                        Object.entries(selectorStyleValue).forEach(([breakpoint, breakpointStyleValue]) => {
+                            const mediaQuery = getMediaQuery(breakpoint, allBreakpoints)
+                            const propertyKey = camelToKebab(selectorStyleKey)
+
+                            state.set({
+                                mediaQuery,
+                                className: selectorClassName,
+                                propertyKey,
+                                value: parseUnit(propertyKey, breakpointStyleValue),
+                            })
+                        })
+
+                        return
+                    }
+
+                    const propertyKey = camelToKebab(selectorStyleKey)
+
+                    state.set({
+                        className: selectorClassName,
+                        propertyKey,
+                        value: parseUnit(propertyKey, selectorStyleValue),
+                    })
+                })
+            })
+        }
+
         if (styleKey[0] === '_') {
             const pseudoColon = pseudos[styleKey as keyof typeof pseudos] ?? ':'
             const pseudoClassName = styleKey.replace('_', `${hash}${pseudoColon}`)

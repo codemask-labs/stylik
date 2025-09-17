@@ -26,8 +26,7 @@ export const create = <TStyles extends Record<string, StylikCSSProperties>>(styl
 
             return [key, className]
         }),
-    ) as Record<
-        keyof TStyles,
-        string & ((dynamicStylesFactory: DynamicStylesFactory) => string)
-    >
+    ) as {
+        [K in keyof TStyles]: string & ((dynamicStylesFactory: DynamicStylesFactory) => string)
+    }
 }

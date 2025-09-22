@@ -2,8 +2,8 @@ import { defineMiddleware } from 'astro/middleware'
 import { stylik } from '../state'
 import { StyleTagID } from '../types'
 
-const injectStyles = (html: string) => {
-    const staticTag = stylik.isDev
+const injectStyles = (html: string, isSSR: boolean) => {
+    const staticTag = isSSR
         ? `<style id=${StyleTagID.Static}>${stylik.getStaticStyles()}</style>`
         : '<link rel="stylesheet" href="./_astro/stylik.css" />'
     const dynamicTag = `<style id=${StyleTagID.Dynamic}>${stylik.getDynamicStyles()}</style>`
@@ -11,7 +11,7 @@ const injectStyles = (html: string) => {
     return html.replace('</head>', `${staticTag}\n${dynamicTag}\n</head>`)
 }
 
-export const onRequest = defineMiddleware(async (_context, next) => {
+export const onRequest = defineMiddleware(async (context, next) => {
     const response = await next()
 
     if (response.headers.get('content-type') !== 'text/html') {
@@ -20,7 +20,8 @@ export const onRequest = defineMiddleware(async (_context, next) => {
 
     const cloned = response.clone()
     const html = await cloned.text()
-    const modifiedHtml = injectStyles(html)
+    const isSSR = stylik.isDev || ('isPrerendered' in context && context.isPrerendered === false)
+    const modifiedHtml = injectStyles(html, isSSR)
     const modifiedResponse = new Response(modifiedHtml, cloned)
 
     return modifiedResponse

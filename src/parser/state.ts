@@ -20,7 +20,12 @@ export class StylikParser {
             return
         }
 
-        this.stylesTarget = document.querySelector<HTMLStyleElement>(`#${id}`)
+        const style = Object.assign(document.createElement('style'), {
+            id: `${id}-${Math.random().toString(32).slice(9)}`,
+        })
+
+        document.head.appendChild(style)
+        this.stylesTarget = style
     }
 
     add = (key: string, config: StylikCSSProperties) => {
